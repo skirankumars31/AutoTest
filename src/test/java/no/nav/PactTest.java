@@ -38,6 +38,7 @@ public class PactTest {
                 .stringType("name")
                 .booleanType("isWorking")
                 .booleanType("medlemskap")
+                .stringMatcher("position", "staff|contactor","staff")
                 .stringMatcher("FNR","\\d{11}","19048634263")
                 .numberType("Age")
                 .numberType("Salary");
