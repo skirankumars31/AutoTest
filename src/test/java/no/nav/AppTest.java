@@ -241,7 +241,7 @@ public class AppTest
 
     @Test
     @CitrusTest
-    public void testGetInvalidPet(@CitrusResource TestDesigner designer) {
+    private void testGetInvalidPet(@CitrusResource TestDesigner designer) {
         wireMockServer.stubFor(
                 WireMock.get(urlEqualTo("/pet/1"))
                         .willReturn(aResponse()

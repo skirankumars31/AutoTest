@@ -37,13 +37,17 @@ public class PactProviderTest {
         System.out.println("Issue 313 is present in the system");
     }
 
+    @State("Pact for Issue 314")
+    public void someotherProviderState() {
+        System.out.println("Issue 314 is present in the system");
+    }
+
 
     @BeforeEach
     void configureSystemUnderTest(PactVerificationContext context) {
 
-
         //Connecting to remote server
-        //WireMock.configureFor("localhost", 8080);
+        WireMock.configureFor("localhost", 8080);
 
         //This is for Pact
         context.setTarget(new HttpTestTarget("localhost", 8080, "/"));
@@ -64,6 +68,16 @@ public class PactProviderTest {
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("svp/resource.json"))
         );
+
+
+        // Returns JSON from File
+        WireMock.stubFor(get(urlEqualTo("/getarticles"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("svp/Person.json"))
+        );
+
 
         context.verifyInteraction();
     }
