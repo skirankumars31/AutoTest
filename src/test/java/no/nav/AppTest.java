@@ -11,6 +11,9 @@ import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
 import com.consol.citrus.dsl.junit.jupiter.CitrusExtension;
 import com.consol.citrus.http.client.HttpClient;
+import com.consol.citrus.kafka.endpoint.KafkaEndpoint;
+import com.consol.citrus.kafka.message.KafkaMessage;
+import com.consol.citrus.message.MessageType;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
@@ -21,6 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -45,6 +50,11 @@ public class AppTest
     private HttpClient todoClient;
     private HttpClient anotherclient;
 
+    @CitrusEndpoint
+    @Autowired
+    @Qualifier("reportingKafkaEndpoint")
+    private KafkaEndpoint reportingKafkaEndpoint;
+
     @State("Pact for Issue 313")
     public void someProviderState() {
         System.out.println("Issue 313 is present in the system");
@@ -65,7 +75,8 @@ public class AppTest
                         .build()
         );*/
 
-        this.validationListener = new OpenApiValidationListener("http://petstore.swagger.io/v2/swagger.json");
+        //this.validationListener = new OpenApiValidationListener("http://petstore.swagger.io/v2/swagger.json");
+        this.validationListener = new OpenApiValidationListener("http://localhost:8082/v2/api-docs");
         wireMockServer.addMockServiceRequestListener(validationListener);
         wireMockServer.start();
 
@@ -303,6 +314,63 @@ public class AppTest
                 .response(HttpStatus.OK)
                 .validate("$.id", 0);
 
+
+        validationListener.assertValidationPassed();
+    }
+
+
+    @Test
+    @CitrusTest
+    public void testYtelse(@CitrusResource TestDesigner designer) {
+
+        wireMockServer.stubFor(
+                WireMock.post(urlEqualTo("/inntekt/getInntekt"))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("content-type", "application/json")
+                                .withBodyFile("svp/getInntekt.json")));
+
+
+        // This is done to validate the response model with swagger
+        final Response response = given()
+                .contentType(ContentType.JSON)
+                .body("{\"fnr\":\"31232\"}")
+                .post("/inntekt/getInntekt")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        wireMockServer.stubFor(
+                WireMock.post(urlEqualTo("/familie/getFamilieForhold"))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("content-type", "application/json")
+                                .withBodyFile("svp/getFamilieForhold.json")));
+
+
+        // This is done to validate the response model with swagger
+        final Response response_familie = given()
+                .contentType(ContentType.JSON)
+                .body("{\"fnr\":\"31232\"}")
+                .post("/familie/getFamilieForhold")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        designer.http()
+                .client("http://localhost:8082")
+                .send()
+                .post("/soknad/sendApiSoknad").contentType("application/json").payload("{\"name\":\"stefan\",\"fnr\":\"253\"}");
+
+        designer.http()
+                .client("http://localhost:8082")
+                .receive()
+                .response(HttpStatus.OK)
+                .validate("$.fnr", "253");
+
+        designer.receive(reportingKafkaEndpoint).validate("$.caseApproval","true");
 
         validationListener.assertValidationPassed();
     }

@@ -18,6 +18,9 @@ package no.nav;
 
 import com.consol.citrus.dsl.endpoint.CitrusEndpoints;
 import com.consol.citrus.http.client.HttpClient;
+import com.consol.citrus.kafka.embedded.EmbeddedKafkaServer;
+import com.consol.citrus.kafka.embedded.EmbeddedKafkaServerBuilder;
+import com.consol.citrus.kafka.endpoint.KafkaEndpoint;
 import com.consol.citrus.xml.namespace.NamespaceContextBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,4 +46,22 @@ public class EndpointConfig {
         namespaceContextBuilder.setNamespaceMappings(Collections.singletonMap("xh", "http://www.w3.org/1999/xhtml"));
         return namespaceContextBuilder;
     }
+
+    @Bean
+    public EmbeddedKafkaServer embeddedKafkaServer() {
+        return new EmbeddedKafkaServerBuilder()
+                .kafkaServerPort(9092)
+                .topics("kafka_example")
+                .build();
+    }
+
+    @Bean
+    public KafkaEndpoint reportingKafkaEndpoint() {
+        return CitrusEndpoints.kafka()
+                .asynchronous()
+                .server("localhost:9092")
+                .topic("kafka_example")
+                .build();
+    }
+
 }

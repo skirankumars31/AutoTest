@@ -17,13 +17,14 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <citrus.version>2.8.0</citrus.version>
+        <pact.jvm.version>3.6.2</pact.jvm.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>au.com.dius</groupId>
             <artifactId>pact-jvm-provider-junit5_2.12</artifactId>
-            <version>3.6.2</version>
+            <version>${pact.jvm.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock -->
@@ -74,9 +75,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.consol.citrus</groupId>
+            <artifactId>citrus-kafka</artifactId>
+            <version>${citrus.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>au.com.dius</groupId>
             <artifactId>pact-jvm-consumer-junit5_2.12</artifactId>
-            <version>3.6.2</version>
+            <version>${pact.jvm.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -87,7 +94,7 @@
         <dependency>
             <groupId>au.com.dius</groupId>
             <artifactId>pact-jvm-model</artifactId>
-            <version>3.6.2</version>
+            <version>${pact.jvm.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -95,6 +102,11 @@
             <artifactId>rest-assured</artifactId>
             <version>3.2.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.15</version>
         </dependency>
     </dependencies>
     <build>
@@ -151,33 +163,54 @@
                     <artifactId>pact-jvm-provider-maven_2.12</artifactId>
                     <version>3.6.0</version>
                     <configuration>
-                        <pactDirectory>target/pacts</pactDirectory> <!-- Defaults to ${project.build.directory}/pacts -->
-                        <pactBrokerUrl>https://skirankumars.pact.dius.com.au</pactBrokerUrl>
-                        <pactBrokerUsername>4eaf1ke5os9i7g5nq2a9vg</pactBrokerUsername>
-                        <pactBrokerPassword>tkdxgo5poanc7ddpsfdiv8</pactBrokerPassword>
+                        <pactDirectory>target/pacts
+                        </pactDirectory> <!-- Defaults to ${project.build.directory}/pacts -->
+                        <pactBrokerUrl>http://localhost:8090</pactBrokerUrl>
+                        <!--   <pactBrokerUsername>4eaf1ke5os9i7g5nq2a9vg</pactBrokerUsername>
+                          <pactBrokerPassword>tkdxgo5poanc7ddpsfdiv8</pactBrokerPassword>  -->
                         <projectVersion>1.0.100</projectVersion> <!-- Defaults to ${project.version} -->
                         <trimSnapshot>true</trimSnapshot> <!-- Defaults to false -->
                         <serviceProviders>
                             <serviceProvider>
                                 <name>ArticlesProvider</name>
                                 <pactBroker>
-                                    <url>https://skirankumars.pact.dius.com.au</url>
-                                    <authentication>
+                                    <url>http://localhost:8090</url>
+                                    <!--<authentication>
                                         <username>4eaf1ke5os9i7g5nq2a9vg</username>
                                         <password>tkdxgo5poanc7ddpsfdiv8</password>
-                                    </authentication>
+                                    </authentication>-->
                                 </pactBroker>
                             </serviceProvider>
                             <serviceProvider>
-                            <name>PersonProvider</name>
-                            <pactBroker>
-                                <url>https://skirankumars.pact.dius.com.au</url>
-                                <authentication>
-                                    <username>4eaf1ke5os9i7g5nq2a9vg</username>
-                                    <password>tkdxgo5poanc7ddpsfdiv8</password>
-                                </authentication>
-                            </pactBroker>
-                        </serviceProvider>
+                                <name>PersonProvider</name>
+                                <pactBroker>
+                                    <url>http://localhost:8090</url>
+                                    <!--<authentication>
+                                        <username>4eaf1ke5os9i7g5nq2a9vg</username>
+                                        <password>tkdxgo5poanc7ddpsfdiv8</password>
+                                    </authentication>-->
+                                </pactBroker>
+                            </serviceProvider>
+                            <serviceProvider>
+                                <name>InntektProvider</name>
+                                <pactBroker>
+                                    <url>http://localhost:8090</url>
+                                    <!--<authentication>
+                                        <username>4eaf1ke5os9i7g5nq2a9vg</username>
+                                        <password>tkdxgo5poanc7ddpsfdiv8</password>
+                                    </authentication>-->
+                                </pactBroker>
+                            </serviceProvider>
+                            <serviceProvider>
+                                <name>FamilieProvider</name>
+                                <pactBroker>
+                                    <url>http://localhost:8090</url>
+                                    <!--<authentication>
+                                        <username>4eaf1ke5os9i7g5nq2a9vg</username>
+                                        <password>tkdxgo5poanc7ddpsfdiv8</password>
+                                    </authentication>-->
+                                </pactBroker>
+                            </serviceProvider>
                         </serviceProviders>
                     </configuration>
                 </plugin>

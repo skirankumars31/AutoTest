@@ -71,7 +71,7 @@ public class PactTest {
     }
 
 
-    /*@Pact(provider = "ArticlesProvider", consumer = "ArticlesConsumer")
+    @Pact(provider = "ArticlesProvider", consumer = "ArticlesConsumer")
     public RequestResponsePact person(PactDslWithProvider builder) {
 
         final DslPart body = new PactDslJsonBody()
@@ -96,9 +96,9 @@ public class PactTest {
                 .status(200)
                 .body(body)
                 .toPact();
-    }*/
+    }
 
-    @Pact(provider = "PersonProvider", consumer = "PersonConsumer")
+    /*@Pact(provider = "PersonProvider", consumer = "PersonConsumer")
     public RequestResponsePact person(PactDslWithProvider builder) {
 
         final DslPart personbody = new PactDslJsonBody()
@@ -115,7 +115,7 @@ public class PactTest {
                 .status(200)
                 .body(personbody)
                 .toPact();
-    }
+    }*/
 
     @Test
     @PactTestFor(pactMethod = "articles")
